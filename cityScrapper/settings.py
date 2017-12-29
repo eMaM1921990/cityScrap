@@ -82,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'city_scrapper',
         'USER': 'postgres',
-        'PASSWORD': 'J&d5FHYe6wp6',
+        'PASSWORD': 'postgres', #'J&d5FHYe6wp6',
         'HOST': 'localhost',  # '127.0.0.1'
         'PORT': '5432',  # '5556'
     }
@@ -143,3 +143,15 @@ CITIES_LIGHT_INCLUDE_COUNTRIES = ['US']
 USERNAME = 'diana@voyajoy.com'
 PASS = 'govoyajoy123'
 TOKEN = 'hI07RSStGz5ywveX8dYDivIA'
+
+
+
+# CELERY
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SOFT_TIME_LIMIT = 60 * 60 * 24
+CELERY_ACKS_LATE = True
+CELERY_PREFETCH_MULTIPLIER = 100
+CELERY_MAX_TASKS_PER_CHILD = 100

@@ -1,3 +1,4 @@
+from cities_light.models import City
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.cache import never_cache
 from django.views.decorators.gzip import gzip_page
@@ -5,7 +6,9 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
+from cityScrapperApp.FlipKey import FlipKeyScrapper
 from cityScrapperApp.models import ScrapModel, ScrapDetails
+from tasks import *
 
 __author__ = 'eMaM'
 
@@ -17,23 +20,23 @@ __author__ = 'eMaM'
 def CriagListScrap(request):
     resp = {}
     resp['code'] = 505
-    if 'city_name' not in request.data or len(request.data['city_name'])==0:
+    if 'city_name' not in request.data or len(request.data['city_name']) == 0:
         resp['msg'] = 'City name is required.'
         return Response(resp)
 
-    if 'name' not in request.data or len(request.data['name'])==0:
+    if 'name' not in request.data or len(request.data['name']) == 0:
         resp['msg'] = 'name is required.'
         return Response(resp)
 
-    if 'email' not in request.data or len(request.data['email'])==0:
+    if 'email' not in request.data or len(request.data['email']) == 0:
         resp['msg'] = 'email is required.'
         return Response(resp)
 
-    if 'phone' not in request.data or len(request.data['phone'])==0:
+    if 'phone' not in request.data or len(request.data['phone']) == 0:
         resp['msg'] = 'phone is required.'
         return Response(resp)
 
-    if 'url' not in request.data or len(request.data['url'])==0:
+    if 'url' not in request.data or len(request.data['url']) == 0:
         resp['msg'] = 'url is required.'
         return Response(resp)
     try:
@@ -62,3 +65,16 @@ def CriagListScrap(request):
     except Exception as e:
         resp['msg'] = str(e)
         return Response(resp)
+
+
+@gzip_page
+@never_cache
+@api_view(['GET'])
+def ScrappService(request, name):
+    resp = {}
+    resp['code'] = 200
+    cities = City.objects.values('name').filter(name__startswith=name).distinct()
+    for city in cities:
+        startScraptask.delay(city)
+    resp['message'] = 'Database will be updating one the scrapper finished'
+    return Response(resp)

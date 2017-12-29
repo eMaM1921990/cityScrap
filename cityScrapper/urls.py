@@ -32,4 +32,5 @@ urlpatterns = [
 
 
     url(r'^api/v1/craiglist/$', api.CriagListScrap, name='CriagListScrap'),
+    url(r'^api/v1/flipkey/(?P<name>.*)/$', api.ScrappService, name='flipkeyAPI'),
 ]

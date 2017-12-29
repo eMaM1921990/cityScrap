@@ -8,3 +8,5 @@ djangorestframework
 simple-salesforce
 phonenumbers
 psycopg2
+celery
+sqlalchemy
