@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import openpyxl
-from django.urls.base import reverse
-from openpyxl.utils import get_column_letter
+from django.core.urlresolvers import reverse
 from cityScrapperApp.SalesForce import SalesForceClass
 
 try:
