@@ -6,7 +6,6 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
-from cityScrapperApp.FlipKey import FlipKeyScrapper
 from cityScrapperApp.models import ScrapModel, ScrapDetails
 from tasks import *
 
