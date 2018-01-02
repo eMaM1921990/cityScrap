@@ -39,8 +39,9 @@ INSTALLED_APPS = [
 
     'cities_light',
     'import_export',
-    'rest_framework',
+
     'cityScrapperApp',
+    # 'rest_framework',
 ]
 
 MIDDLEWARE_CLASSES = [

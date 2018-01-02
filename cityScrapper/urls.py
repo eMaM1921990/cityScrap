@@ -16,9 +16,7 @@ Including another URLconf
 from django.conf.urls import *
 from django.contrib import admin
 
-# from cityScrapperApp.api import CriagListScrap
-from cityScrapperApp import api
-from cityScrapperApp.api import CriagListScrap
+
 from cityScrapperApp.views import *
 
 urlpatterns = [
@@ -32,6 +30,6 @@ urlpatterns = [
     url(r'^sales_force/$', cloneSalesForceLeads,name='cloneSalesForceLeads'),
 
 
-    url(r'^api/v1/craiglist/$', CriagListScrap, name='CriagListScrap11'),
-    url(r'^api/v1/flipkey/(?P<name>.*)/$', api.ScrappService, name='flipkeyAPI'),
+    # url(r'^api/v1/craiglist/$', CriagListScrap, name='CriagListScrap11'),
+    # url(r'^api/v1/flipkey/(?P<name>.*)/$', api.ScrappService, name='flipkeyAPI'),
 ]
