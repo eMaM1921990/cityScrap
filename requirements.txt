@@ -7,6 +7,6 @@ django-import-export
 djangorestframework
 simple-salesforce
 phonenumbers
-psycopg2
+
 celery
 sqlalchemy

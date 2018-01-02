@@ -36,10 +36,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cityScrapperApp',
+
     'cities_light',
     'import_export',
     'rest_framework',
+    'cityScrapperApp',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -86,6 +87,12 @@ DATABASES = {
         'HOST': 'localhost',  # '127.0.0.1'
         'PORT': '5432',  # '5556'
     }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+
 }
 
 # Password validation

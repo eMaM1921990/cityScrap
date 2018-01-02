@@ -60,7 +60,6 @@ def CriagListScrap(request):
         resp['msg'] = 'Success'
         return Response(resp)
 
-
     except Exception as e:
         resp['msg'] = str(e)
         return Response(resp)
