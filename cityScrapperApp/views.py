@@ -114,6 +114,7 @@ def scrap(request):
     else:
 
         cities = City.objects.values('name').filter(name__startswith='l').distinct()
+        print cities
         job_numbers = 0
         for city in cities:
             startScraptask.delay(city)
