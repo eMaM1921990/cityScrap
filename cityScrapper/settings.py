@@ -36,12 +36,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # 'rest_framework',
     'cities_light',
     'import_export',
-
     'cityScrapperApp',
-    # 'rest_framework',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -80,19 +78,19 @@ WSGI_APPLICATION = 'cityScrapper.wsgi.application'
 
 DATABASES = {
 
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'city_scrapper',
-        'USER': 'postgres',
-        'PASSWORD': 'J&d5FHYe6wp6',
-        'HOST': 'localhost',  # '127.0.0.1'
-        'PORT': '5432',  # '5556'
-    }
-
     # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'city_scrapper',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'J&d5FHYe6wp6',
+    #     'HOST': 'localhost',  # '127.0.0.1'
+    #     'PORT': '5432',  # '5556'
     # }
+
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 
 }
 

@@ -11,3 +11,8 @@ def startScraptask(city):
     print 'start processing with city ' + str(city['name'])
     # start scrap
     flipKey.start_processing(city['name'])
+
+
+@shared_task()
+def calc(inx):
+    return inx

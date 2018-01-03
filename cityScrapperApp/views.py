@@ -12,17 +12,18 @@ import csv
 import sys
 
 from cities_light.models import City
+from django.shortcuts import render, redirect
 from django.conf import settings
 from django.db.models import Count
 from django.http.response import HttpResponse
-from django.shortcuts import render, redirect
 import json
 
 # Create your views here.
 from django.views.decorators.http import require_http_methods
 
 from cityScrapperApp.FlipKey import FlipKeyScrapper
-from cityScrapperApp.models import ScrapModel, ScrapDetails, SalesForce
+from cityScrapperApp.models import ScrapModel, ScrapDetails
+from tasks import *
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -33,7 +34,9 @@ def index(request):
     template = 'index.html'
     # Get Cities
     context['cities'] = City.objects.values('name').distinct()
-    return render(request, template, context=context)
+    return render(request=request,
+                  template_name=template,
+                  context=context)
 
 
 def travelMobData(request):
@@ -109,16 +112,15 @@ def scrap(request):
 
         return HttpResponse(json.dumps(ret, ensure_ascii=False))
     else:
-        cities = City.objects.values('name').filter(name__startswith='l').distinct()
-        flipKey = FlipKeyScrapper()
-        for city in cities:
-            print 'start processing with city ' + str(city['name'])
-            # start scrap
-            flipKey.start_processing(city['name'])
-            # flipKey = FlipKeyScrapper()
-            # flipKey.start_processing(cityId)
 
-    return None
+        cities = City.objects.values('name').filter(name__startswith='l').distinct()
+        job_numbers = 0
+        for city in cities:
+            startScraptask.delay(city)
+            job_numbers += 1
+        calc.delay(10)
+
+    return redirect(reverse(index))
 
 
 def cloneSalesForceLeads(request):
@@ -141,7 +143,8 @@ def cloneSalesForceLeads(request):
     # data = list(set(dataList)-set(sales_force_leads_list))
 
 
-    dataReader = csv.reader(open('/Users/mac/Downloads/homeaway_datadone1.csv'), delimiter=str(u',').encode('utf-8'), quotechar=str(u'"').encode('utf-8'))
+    dataReader = csv.reader(open('/Users/mac/Downloads/homeaway_datadone1.csv'), delimiter=str(u',').encode('utf-8'),
+                            quotechar=str(u'"').encode('utf-8'))
     for record in dataReader:
         print '{} start phone '.format(record[2])
         # phone = str(record['phone']).replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
@@ -161,8 +164,3 @@ def cloneSalesForceLeads(request):
                 print str(e)
 
     return redirect(reverse('index'))
-
-
-
-
-
