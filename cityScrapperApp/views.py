@@ -144,7 +144,7 @@ def cloneSalesForceLeads(request):
     # data = list(set(dataList)-set(sales_force_leads_list))
 
 
-    dataReader = csv.reader(open('/Users/mac/Downloads/homeaway_datadone1.csv'), delimiter=str(u',').encode('utf-8'),
+    dataReader = csv.reader(open('/Users/mac/Downloads/Vacation Rentals Cleaning contacts.csv'), delimiter=str(u',').encode('utf-8'),
                             quotechar=str(u'"').encode('utf-8'))
     for record in dataReader:
         print '{} start phone '.format(record[2])
