@@ -113,7 +113,7 @@ def scrap(request):
         return HttpResponse(json.dumps(ret, ensure_ascii=False))
     else:
 
-        cities = City.objects.values('name').filter(name__startswith='M').distinct()
+        cities = City.objects.values('name').filter(name__startswith='N').distinct()
         print cities
         job_numbers = 0
         for city in cities:
