@@ -119,7 +119,7 @@ def scrap(request):
         for city in cities:
             startScraptask.delay(city)
             job_numbers += 1
-        calc.delay(10)
+        # calc.delay(10)
 
     return redirect(reverse(index))
 
