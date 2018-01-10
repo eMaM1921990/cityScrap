@@ -147,8 +147,8 @@ CITIES_LIGHT_INCLUDE_COUNTRIES = ['US']
 
 # SALES FORCE INTEGRATION
 USERNAME = 'diana@voyajoy.com'
-PASS = 'govoyajoy123'
-TOKEN = 'hI07RSStGz5ywveX8dYDivIA'
+PASS = 'voyajoy123'
+TOKEN = 'WW1lnV7O11JIB7tVnKlbksrc2'
 
 
 

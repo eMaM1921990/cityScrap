@@ -74,8 +74,10 @@ class FlipKeyScrapper():
                 # Check if sSlashName exist
                 if slash_name:
                     count_scrap = ScrapModel.objects.filter(name=display_name).count()
+                    is_new = True
                     if count_scrap >= 0:
                         display_name += str(count_scrap + 1)
+                        is_new = False
 
                     page_no = 0
 
@@ -87,7 +89,7 @@ class FlipKeyScrapper():
 
                     print 'Total Page' + str(json.loads(search_conn_result)['tot_pages'])
 
-                    if search_conn_result :
+                    if search_conn_result:
                         # save to databse
                         record = ScrapModel()
                         record.name = display_name
@@ -163,7 +165,7 @@ class FlipKeyScrapper():
         return owner
 
     # Parse Search page
-    def parse_search_items(self, result, masterScrap):
+    def parse_search_items(self, result, masterScrap, is_new):
         result = json.loads(result)['results']
         for search_item in result:
             if search_item:

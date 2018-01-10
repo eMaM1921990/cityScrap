@@ -144,22 +144,22 @@ def cloneSalesForceLeads(request):
     # data = list(set(dataList)-set(sales_force_leads_list))
 
 
-    dataReader = csv.reader(open('/Users/mac/Downloads/Vacation Rentals Cleaning contacts.csv'), delimiter=str(u',').encode('utf-8'),
+    dataReader = csv.reader(open('/Users/mac/Downloads/109822.csv'), delimiter=str(u',').encode('utf-8'),
                             quotechar=str(u'"').encode('utf-8'))
     for record in dataReader:
         print '{} start phone '.format(record[2])
         # phone = str(record['phone']).replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
-        if record[3]:
+        if record[28]:
             try:
                 # phone_records = ScrapDetails.objects.filter(phone=phone)
                 SalesForceInstance.check_and_create_lead(last_name=record[0],
-                                                         phone=record[3],
-                                                         campaign_source=(str(record[2]).split(',')[0])[:25],
-                                                         lead_source='AhmedHomeAway ',
+                                                         phone=record[28],
+                                                         campaign_source=(str(record[3]))[:25],
+                                                         lead_source='AhmedCaldwellLists ',
                                                          website='',
                                                          company='HomeAway',
                                                          tags='HomeAway, scrape, house',
-                                                         email=record[4] if record[4] else '',
+                                                         email= '',
                                                          is_international=True)
             except Exception as e:
                 print str(e)
