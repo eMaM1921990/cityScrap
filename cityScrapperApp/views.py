@@ -132,7 +132,7 @@ def cloneSalesForceLeads(request):
     # sales_force_leads_list = SalesForce.objects.all()
     # sales_force_leads_list = ['+'+str(o.remove_number_format) for o in sales_force_leads_list]
     #
-    data = ScrapDetails.objects.filter(phone__isnull=False)
+    data = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct()
 
     file = False
     if file:
@@ -156,8 +156,8 @@ def cloneSalesForceLeads(request):
                 except Exception as e:
                     print str(e)
     else:
-        for record in data:
-            # phone_records = ScrapDetails.objects.filter(phone=phone)
+        for r in data:
+            record = ScrapDetails.objects.filter(phone=r['phone'])
             SalesForceInstance.check_and_create_lead(last_name=record.name,
                                                      phone=record.phone,
                                                      campaign_source=(record.scrap.name)[:25],
