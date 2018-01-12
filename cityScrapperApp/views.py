@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import time
 from django.core.urlresolvers import reverse
 from cityScrapperApp.SalesForce import SalesForceClass
 
@@ -159,6 +160,7 @@ def cloneSalesForceLeads(request):
         for r in data:
             record = ScrapDetails.objects.filter(phone=r['phone'])
             record = record[0]
+            time.sleep(10)
             SalesForceInstance.check_and_create_lead(last_name=record.name,
                                                      phone=record.phone,
                                                      campaign_source=(record.scrap.name)[:25],
