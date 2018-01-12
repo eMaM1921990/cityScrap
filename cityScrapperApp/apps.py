@@ -5,7 +5,7 @@ from django.apps import AppConfig
 
 
 class TravelmobappConfig(AppConfig):
-    name = 'CityScrappers'
+    name = 'cityScrapperApp'
 
     def ready(self):
         import Signals
