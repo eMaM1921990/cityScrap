@@ -119,7 +119,7 @@ def scrap(request):
         for city in cities:
             startScraptask.delay(city)
             job_numbers += 1
-        # calc.delay(10)
+            # calc.delay(10)
 
     return redirect(reverse(index))
 
@@ -132,36 +132,40 @@ def cloneSalesForceLeads(request):
     # sales_force_leads_list = SalesForce.objects.all()
     # sales_force_leads_list = ['+'+str(o.remove_number_format) for o in sales_force_leads_list]
     #
-    # data = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct()
-    # dataList = [str(o['phone']).replace("(", "").replace(")", "").replace("-", "").replace(" ", "") for o in data]
-    # for sales_force_number in sales_force_leads_list:
-    #     data = data.exclude(phone=sales_force_number)
-    # data = data.values('phone').distinct()
-    # listOne = ['a','b','c']
-    # listTwo = ['d']
-    # data = list(set(listOne)-set(listTwo))
+    data = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct()
 
-    # data = list(set(dataList)-set(sales_force_leads_list))
-
-
-    dataReader = csv.reader(open('/Users/mac/Downloads/109822.csv'), delimiter=str(u',').encode('utf-8'),
-                            quotechar=str(u'"').encode('utf-8'))
-    for record in dataReader:
-        print '{} start phone '.format(record[2])
-        # phone = str(record['phone']).replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
-        if record[28]:
-            try:
-                # phone_records = ScrapDetails.objects.filter(phone=phone)
-                SalesForceInstance.check_and_create_lead(last_name=record[0],
-                                                         phone=record[28],
-                                                         campaign_source=(str(record[3]))[:25],
-                                                         lead_source='AhmedCaldwellLists ',
-                                                         website='',
-                                                         company='HomeAway',
-                                                         tags='HomeAway, scrape, house',
-                                                         email= '',
-                                                         is_international=True)
-            except Exception as e:
-                print str(e)
+    file = False
+    if file:
+        dataReader = csv.reader(open('/Users/mac/Downloads/109822.csv'), delimiter=str(u',').encode('utf-8'),
+                                quotechar=str(u'"').encode('utf-8'))
+        for record in dataReader:
+            print '{} start phone '.format(record[2])
+            # phone = str(record['phone']).replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
+            if record[28]:
+                try:
+                    # phone_records = ScrapDetails.objects.filter(phone=phone)
+                    SalesForceInstance.check_and_create_lead(last_name=record[0],
+                                                             phone=record[28],
+                                                             campaign_source=(str(record[3]))[:25],
+                                                             lead_source='AhmedCaldwellLists ',
+                                                             website='',
+                                                             company='HomeAway',
+                                                             tags='HomeAway, scrape, house',
+                                                             email='',
+                                                             is_international=True)
+                except Exception as e:
+                    print str(e)
+    else:
+        for record in data:
+            # phone_records = ScrapDetails.objects.filter(phone=phone)
+            SalesForceInstance.check_and_create_lead(last_name=record.name,
+                                                     phone=record.phone,
+                                                     campaign_source=(record.scrap.name)[:25],
+                                                     lead_source='AhmedFlipKey ',
+                                                     website='',
+                                                     company='FlipKey',
+                                                     tags='FlipKey, scrape, house',
+                                                     email='',
+                                                     is_international=True)
 
     return redirect(reverse('index'))
