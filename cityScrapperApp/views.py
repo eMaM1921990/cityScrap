@@ -132,7 +132,7 @@ def cloneSalesForceLeads(request):
     # sales_force_leads_list = SalesForce.objects.all()
     # sales_force_leads_list = ['+'+str(o.remove_number_format) for o in sales_force_leads_list]
     #
-    data = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct()
+    data = ScrapDetails.objects.filter(phone__isnull=False)
 
     file = False
     if file:
