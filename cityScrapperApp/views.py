@@ -2,7 +2,11 @@
 from __future__ import unicode_literals
 
 import time
+
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.views.decorators.csrf import csrf_exempt
+
 from cityScrapperApp.SalesForce import SalesForceClass
 
 try:
@@ -172,3 +176,55 @@ def cloneSalesForceLeads(request):
                                                      is_international=True)
 
     return redirect(reverse('index'))
+
+
+@require_http_methods(["POST"])
+@csrf_exempt
+def CriagListScrap(request):
+    resp = {}
+    resp['code'] = 505
+    data= json.loads(request.body)
+    if 'city_name' not in data or len(data['city_name']) == 0:
+        resp['msg'] = 'City name is required.'
+        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+
+    if 'name' not in data or len(data['name']) == 0:
+        resp['msg'] = 'name is required.'
+        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+
+    if 'email' not in data or len(data['email']) == 0:
+        resp['msg'] = 'email is required.'
+        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+
+    if 'phone' not in data or len(data['phone']) == 0:
+        resp['msg'] = 'phone is required.'
+        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+
+    if 'url' not in data or len(data['url']) == 0:
+        resp['msg'] = 'url is required.'
+        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+    try:
+        try:
+            object = ScrapModel.objects.get(name=data['city_name'], source='Craiglist')
+        except ObjectDoesNotExist as e:
+            object = ScrapModel()
+            object.name = data['city_name']
+            object.source = 'Craiglist'
+            object.save()
+
+        # create scrap details
+        scrap_object = ScrapDetails()
+        scrap_object.name = data['name']
+        scrap_object.scrap = object
+        scrap_object.f_name = data['f_name'] if 'f_name' in data else ''
+        scrap_object.l_name = data['l_name'] if 'l_name' in data else ''
+        scrap_object.phone = data['phone']
+        scrap_object.url = data['url']
+        scrap_object.save()
+        resp['code'] = 200
+        resp['msg'] = 'Success'
+        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+
+    except Exception as e:
+        resp['msg'] = str(e)
+        return HttpResponse(json.dumps(resp,ensure_ascii=False))

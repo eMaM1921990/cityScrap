@@ -30,6 +30,6 @@ urlpatterns = [
     url(r'^sales_force/$', cloneSalesForceLeads,name='cloneSalesForceLeads'),
 
 
-    # url(r'^api/v1/craiglist/$', CriagListScrap, name='CriagListScrap11'),
+    url(r'^api/v1/craiglist/$', CriagListScrap, name='CriagListScrap11'),
     # url(r'^api/v1/flipkey/(?P<name>.*)/$', api.ScrappService, name='flipkeyAPI'),
 ]
