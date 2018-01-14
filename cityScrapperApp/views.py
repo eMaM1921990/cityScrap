@@ -39,6 +39,7 @@ def index(request):
     template = 'index.html'
     # Get Cities
     context['cities'] = City.objects.values('name').distinct()
+    context['count'] = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct().count()
     return render(request=request,
                   template_name=template,
                   context=context)
