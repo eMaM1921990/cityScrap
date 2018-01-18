@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'city_scrapper',
         'USER': 'postgres',
         'PASSWORD': 'J&d5FHYe6wp6',
-        'HOST': '51.143.93.174',  # '127.0.0.1'
+        'HOST':  '52.151.31.161',
         'PORT': '5432',  # '5556'
     }
 
