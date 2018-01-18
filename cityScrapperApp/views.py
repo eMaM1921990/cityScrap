@@ -5,6 +5,7 @@ import time
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 
 from cityScrapperApp.SalesForce import SalesForceClass
@@ -119,8 +120,8 @@ def scrap(request):
         return HttpResponse(json.dumps(ret, ensure_ascii=False))
     else:
 
-        cities = City.objects.values('name').filter(name__startswith='Z').distinct()
-        print cities
+        cities = City.objects.values('name').filter(name__startswith='Z').exclude(code2='US').distinct()
+
         job_numbers = 0
         for city in cities:
             startScraptask.delay(city)
