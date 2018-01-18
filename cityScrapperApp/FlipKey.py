@@ -165,7 +165,7 @@ class FlipKeyScrapper():
         return owner
 
     # Parse Search page
-    def parse_search_items(self, result, masterScrap, is_new):
+    def parse_search_items(self, result, masterScrap):
         result = json.loads(result)['results']
         for search_item in result:
             if search_item:
