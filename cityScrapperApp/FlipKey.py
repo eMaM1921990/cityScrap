@@ -91,9 +91,15 @@ class FlipKeyScrapper():
 
                     if search_conn_result:
                         # save to databse
-                        record = ScrapModel()
-                        record.name = display_name
-                        record.save()
+                        exist = ScrapModel.objects.filter(name = display_name).exists()
+                        if exist:
+                            record = ScrapModel.objects.get(name = display_name)
+                            record.name = display_name
+                            record.save()
+                        else:
+                            record = ScrapModel()
+                            record.name = display_name
+                            record.save()
 
                         # parse search item for first page
                         self.parse_search_items(search_conn_result, record)
