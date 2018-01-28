@@ -73,11 +73,11 @@ class FlipKeyScrapper():
 
                 # Check if sSlashName exist
                 if slash_name:
-                    count_scrap = ScrapModel.objects.filter(name=display_name).count()
-                    is_new = True
-                    if count_scrap >= 0:
-                        display_name += str(count_scrap )
-                        is_new = False
+                    #count_scrap = ScrapModel.objects.filter(name=display_name).count()
+                    #is_new = True
+                    #if count_scrap >= 0:
+                    #    display_name += str(count_scrap )
+                    #    is_new = False
 
                     page_no = 0
 
