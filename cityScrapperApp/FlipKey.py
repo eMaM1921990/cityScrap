@@ -76,7 +76,7 @@ class FlipKeyScrapper():
                     count_scrap = ScrapModel.objects.filter(name=display_name).count()
                     is_new = True
                     if count_scrap >= 0:
-                        display_name += str(count_scrap + 1)
+                        display_name += str(count_scrap )
                         is_new = False
 
                     page_no = 0
