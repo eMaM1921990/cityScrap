@@ -119,7 +119,7 @@ def scrap(request):
 
         return HttpResponse(json.dumps(ret, ensure_ascii=False))
     else:
-        arr_cities = ['D','E','F','G']
+        arr_cities = ['H','I','J','K','L','M']
         for city in arr_cities:
             cities = City.objects.values('name').filter(name__startswith=city).exclude(country__code2='US').distinct()
 
