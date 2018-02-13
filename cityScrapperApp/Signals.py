@@ -6,7 +6,7 @@ from cityScrapperApp.models import ScrapDetails
 
 __author__ = 'eMaM'
 
-@receiver(post_save, sender=ScrapDetails)
+#@receiver(post_save, sender=ScrapDetails)
 def ScrapDetailsSingal(sender, instance, **kwargs):
     SalesForceInstance = SalesForceClass()
     if instance.phone:
