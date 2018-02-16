@@ -196,9 +196,7 @@ def CriagListScrap(request):
         resp['msg'] = 'City name is required.'
         return HttpResponse(json.dumps(resp,ensure_ascii=False))
 
-    if 'name' not in data or len(data['name']) == 0:
-        resp['msg'] = 'name is required.'
-        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+    
 
     if 'email' not in data or len(data['email']) == 0:
         resp['msg'] = 'email is required.'
@@ -222,7 +220,7 @@ def CriagListScrap(request):
 
         # create scrap details
         scrap_object = ScrapDetails()
-        scrap_object.name = data['name']
+        scrap_object.name = data['name'] if 'name' in data else ''
         scrap_object.scrap = object
         scrap_object.f_name = data['f_name'] if 'f_name' in data else ''
         scrap_object.l_name = data['l_name'] if 'l_name' in data else ''
