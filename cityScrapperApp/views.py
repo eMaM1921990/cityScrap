@@ -186,7 +186,12 @@ def cloneSalesForceLeads(request):
 def CriagListScrap(request):
     resp = {}
     resp['code'] = 505
-    data= json.loads(request.body)
+    if request.body:
+        data= json.loads(request.body)
+    else:
+        resp['msg'] = 'No data found'
+        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+    
     if 'city_name' not in data or len(data['city_name']) == 0:
         resp['msg'] = 'City name is required.'
         return HttpResponse(json.dumps(resp,ensure_ascii=False))
