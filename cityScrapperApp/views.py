@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import time
 
-import requests
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -126,7 +125,7 @@ def scrap(request):
 
         return HttpResponse(json.dumps(ret, ensure_ascii=False))
     else:
-        arr_cities = ['H', 'I', 'J', 'K', 'L', 'M']
+        arr_cities = ['N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
         for city in arr_cities:
             cities = City.objects.values('name').filter(name__startswith=city).exclude(country__code2='US').distinct()
 
@@ -211,9 +210,7 @@ def CriagListScrap(request):
         resp['msg'] = 'City name is required.'
         return HttpResponse(json.dumps(resp, ensure_ascii=False))
 
-    if 'name' not in data or len(data['name']) == 0:
-        resp['msg'] = 'name is required.'
-        return HttpResponse(json.dumps(resp, ensure_ascii=False))
+
 
     if 'email' not in data or len(data['email']) == 0:
         resp['msg'] = 'email is required.'
@@ -237,7 +234,7 @@ def CriagListScrap(request):
 
         # create scrap details
         scrap_object = ScrapDetails()
-        scrap_object.name = data['name']
+        scrap_object.name = data['name'] if 'name' in data else ''
         scrap_object.scrap = object
         scrap_object.f_name = data['f_name'] if 'f_name' in data else ''
         scrap_object.l_name = data['l_name'] if 'l_name' in data else ''
