@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', index,name='index'),
     url(r'^scrap/$', scrap,name='scrap'),
+    url(r'^scrap_criaglist/$', scrap_criaglist,name='scrap_criaglist'),
     url(r'^data/$', travelMobData,name='travelMobData'),
     url(r'^export/(?P<id>.*)/(?P<name>.*)/$', exportData,name='exportData'),
     url(r'^export/(?P<id>.*)/(?P<name>.*)/(?P<unique>.*)$', exportExtraData,name='exportExtraData'),

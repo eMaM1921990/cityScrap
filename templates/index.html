@@ -150,19 +150,17 @@
             <ul class="nav navbar-nav">
 
 
-
-
-                <li >
-                    <a href="{% url 'travelMobData' %}">Export Data <b style="color: green">[{{ count }}]</b></a>
+                <li>
+                    <a href="{% url 'travelMobData' %}">Scrapped Data <b style="color: green"></b></a>
                 </li>
 
-                <li >
-                    <a href="{% url 'propertyManager' %}">Export Property Manager</a>
-                </li>
-
-                <li >
-                    <a href="{% url 'cloneSalesForceLeads' %}">Clone Salesforce</a>
-                </li>
+                {#                <li >#}
+                {#                    <a href="{% url 'propertyManager' %}">Export Property Manager</a>#}
+                {#                </li>#}
+                {##}
+                {#                <li >#}
+                {#                    <a href="{% url 'cloneSalesForceLeads' %}">Clone Salesforce</a>#}
+                {#                </li>#}
 
 
             </ul>
@@ -177,9 +175,9 @@
 </div>
 
 <div class="container">
-    <div class="col-md-9">
+    <div class="col-md-6">
         {{ message }}
-        <h1>Scrap US selected city</h1>
+        <h1>FlipKey Cities</h1>
         <div class="row">
             <form action="{% url 'scrap' %}" method="post">
                 {% csrf_token %}
@@ -197,7 +195,35 @@
                         </select>
                     </div>
                     <div>
-                        <input type="submit" class="btn btn-info btn-large " value="Scrap" >
+                        <input type="submit" class="btn btn-info btn-large " value="Scrap">
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+        {{ message }}
+        <h1>CriagList Cities</h1>
+        <div class="row">
+            <form action="{% url 'scrap_criaglist' %}" method="post">
+                {% csrf_token %}
+                <div class="col-xs-3">
+                    <div class="form-group">
+                        <select class="" id="city" name="city">
+                            {% for state in criaglist_cities %}
+                                {% for  city in state.cities %}
+                                    <option value="{{ city.url }},{{ state.state }},{{ city.name }}">{{ state.state|title }} ,{{ city.name|title }}</option>
+                                {% endfor %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <input type="submit" class="btn btn-info btn-large " value="Start Scrap">
                     </div>
                 </div>
 
@@ -207,16 +233,19 @@
 
     </div>
 </div>
-<div id="wait" style="display:none;width:69px;height:89px;border:1px solid black;position:absolute;top:50%;left:50%;padding:2px;"><img src='demo_wait.gif' width="64" height="64" /><br>Loading..</div>
+<div id="wait"
+     style="display:none;width:69px;height:89px;border:1px solid black;position:absolute;top:50%;left:50%;padding:2px;">
+    <img src='demo_wait.gif' width="64" height="64"/><br>Loading..
+</div>
 
 <script src="{% static 'jquery-1.12.4.js' %}"></script>
 <script src="{% static 'scrap.js' %}"></script>
 <script>
-    $(document).ready(function(){
-        $(document).ajaxStart(function(){
+    $(document).ready(function () {
+        $(document).ajaxStart(function () {
             $("#wait").css("display", "block");
         });
-        $(document).ajaxComplete(function(){
+        $(document).ajaxComplete(function () {
             $("#wait").css("display", "none");
         });
 

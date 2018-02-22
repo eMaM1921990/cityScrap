@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import time
 
+import requests
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -35,15 +36,21 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 
-def index(request):
+def index(request,**kwargs):
     context = {}
     template = 'index.html'
     # Get Cities
     context['cities'] = City.objects.values('name').distinct()
+    # Get Criaglist
+    response = requests.get(
+        'http://40.65.121.61/cldownloader/fetchcitynames.php?token=eb825fe5969d2cc210e2fe9772d251c8')
+    if response.status_code == 200:
+        context['criaglist_cities'] = json.loads(response.text)
     context['count'] = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct().count()
-    return render(request=request,
-                  template_name=template,
-                  context=context)
+
+    if kwargs.get('msg'):
+        context['msg'] =kwargs.get('msg')
+    return render(request=request,template_name=template,context=context)
 
 
 def travelMobData(request):
@@ -119,7 +126,7 @@ def scrap(request):
 
         return HttpResponse(json.dumps(ret, ensure_ascii=False))
     else:
-        arr_cities = ['H','I','J','K','L','M']
+        arr_cities = ['H', 'I', 'J', 'K', 'L', 'M']
         for city in arr_cities:
             cities = City.objects.values('name').filter(name__startswith=city).exclude(country__code2='US').distinct()
 
@@ -127,9 +134,17 @@ def scrap(request):
             for city in cities:
                 startScraptask.delay(city)
                 job_numbers += 1
-            # calc.delay(10)
+                # calc.delay(10)
 
     return redirect(reverse(index))
+
+
+@require_http_methods(["POST"])
+def scrap_criaglist(request):
+    cityId = request.POST.get('city')
+    print cityId
+    startScrapCriaglist.delay(cityId.split(',')[1], cityId.split(',')[2], cityId.split(',')[0])
+    return redirect(reverse(index),msg='Request send and ready for scrapping')
 
 
 def cloneSalesForceLeads(request):
@@ -140,26 +155,26 @@ def cloneSalesForceLeads(request):
     # sales_force_leads_list = SalesForce.objects.all()
     # sales_force_leads_list = ['+'+str(o.remove_number_format) for o in sales_force_leads_list]
     #
-    data = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct()
-
-    file = False
+    # data = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct()
+    data = None
+    file = True
     if file:
-        dataReader = csv.reader(open('/Users/mac/Downloads/109822.csv'), delimiter=str(u',').encode('utf-8'),
+        dataReader = csv.reader(open('/Users/mac/Downloads/VacationRentels.csv'), delimiter=str(u',').encode('utf-8'),
                                 quotechar=str(u'"').encode('utf-8'))
         for record in dataReader:
-            print '{} start phone '.format(record[2])
+            print '{} start phone '.format(record[1])
             # phone = str(record['phone']).replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
-            if record[28]:
+            if record[1]:
                 try:
                     # phone_records = ScrapDetails.objects.filter(phone=phone)
                     SalesForceInstance.check_and_create_lead(last_name=record[0],
-                                                             phone=record[28],
+                                                             phone=record[1],
                                                              campaign_source=(str(record[3]))[:25],
-                                                             lead_source='AhmedCaldwellLists ',
-                                                             website='',
-                                                             company='HomeAway',
-                                                             tags='HomeAway, scrape, house',
-                                                             email='',
+                                                             lead_source='Ahmed_Allumala',
+                                                             website=record[3],
+                                                             company='--',
+                                                             tags='--',
+                                                             email=record[2],
                                                              is_international=True)
                 except Exception as e:
                     print str(e)
@@ -186,26 +201,31 @@ def cloneSalesForceLeads(request):
 def CriagListScrap(request):
     resp = {}
     resp['code'] = 505
-    data= json.loads(request.body)
+    if request.body:
+        data = json.loads(request.body)
+    else:
+        resp['msg'] = 'No data found'
+        return HttpResponse(json.dumps(resp, ensure_ascii=False))
+
     if 'city_name' not in data or len(data['city_name']) == 0:
         resp['msg'] = 'City name is required.'
-        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+        return HttpResponse(json.dumps(resp, ensure_ascii=False))
 
     if 'name' not in data or len(data['name']) == 0:
         resp['msg'] = 'name is required.'
-        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+        return HttpResponse(json.dumps(resp, ensure_ascii=False))
 
     if 'email' not in data or len(data['email']) == 0:
         resp['msg'] = 'email is required.'
-        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+        return HttpResponse(json.dumps(resp, ensure_ascii=False))
 
     if 'phone' not in data or len(data['phone']) == 0:
         resp['msg'] = 'phone is required.'
-        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+        return HttpResponse(json.dumps(resp, ensure_ascii=False))
 
     if 'url' not in data or len(data['url']) == 0:
         resp['msg'] = 'url is required.'
-        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+        return HttpResponse(json.dumps(resp, ensure_ascii=False))
     try:
         try:
             object = ScrapModel.objects.get(name=data['city_name'], source='Craiglist')
@@ -226,8 +246,8 @@ def CriagListScrap(request):
         scrap_object.save()
         resp['code'] = 200
         resp['msg'] = 'Success'
-        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+        return HttpResponse(json.dumps(resp, ensure_ascii=False))
 
     except Exception as e:
         resp['msg'] = str(e)
-        return HttpResponse(json.dumps(resp,ensure_ascii=False))
+        return HttpResponse(json.dumps(resp, ensure_ascii=False))

@@ -1,3 +1,4 @@
+import requests
 from celery import shared_task
 
 from cityScrapperApp.FlipKey import FlipKeyScrapper
@@ -16,3 +17,13 @@ def startScraptask(city):
 @shared_task()
 def calc(inx):
     return inx
+
+
+@shared_task(max_retries=10)
+def startScrapCriaglist(state,city,url):
+    # http://40.65.121.61/cldownloader/processURL.php%3Fcountryname%3Dcanada%26statename%3DAlberta%26cityname%3Dcalgary%26url%3Dhttps%253A%252F%252Fcalgary.craigslist.ca%252F
+    url = 'http://40.65.121.61/cldownloader/processURL.php?statename={}&cityname={}&url={}'.format(state,city,url)
+    print url
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.text
