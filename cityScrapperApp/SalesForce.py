@@ -20,7 +20,7 @@ class SalesForceClass():
             # sandbox=True
         )
 
-    def get_lead_object(self, last_name, phone, campaign_source, lead_source, website, company, tags, is_international,email):
+    def get_lead_object(self, last_name, phone, campaign_source, lead_source, website, company, tags, is_international,email,city):
         return {
             'Status': 'New',  # static
             'LastName': last_name,  # put whole name string into last name
@@ -32,13 +32,26 @@ class SalesForceClass():
             'Company': company,  # website name
             'Tag_Cloud__c': tags,  # random tags, i used source, method, property type.
             'International_Phone__c': is_international,
-            'Email':email
+            'Email':email,
+            'City':city
         }
 
-    def create_lead(self, last_name, phone, campaign_source, lead_source, website, company, tags, is_international,email):
+
+    def get_lead_object_update(self, id , city):
+        return {
+            'Id': id,  # static
+            'City':city
+        }
+
+    def create_lead(self, last_name, phone, campaign_source, lead_source, website, company, tags, is_international,email,city):
         lead_obj = self.get_lead_object(last_name, phone, campaign_source, lead_source, website, company, tags,
-                                        is_international,email)
+                                        is_international,email,city)
         self.sf.Lead.create(lead_obj)
+
+
+    def create_update_lead(self,id ,city):
+        self.sf.Lead.upsert
+
 
     # Pulls all phone numbers. Phone numbers are not all the same format, so numbers will need to be standardized or converted before comparison
     def query_all_leads(self):
@@ -63,8 +76,8 @@ class SalesForceClass():
         return leads
 
     # You can use this to create a single lead to salesforce
-    def check_and_create_lead(self, last_name, phone, campaign_source, lead_source, website, company, tags,
-                              is_international,email):
+    def     check_and_create_lead(self, last_name, phone, campaign_source, lead_source, website, company, tags,
+                              is_international,email,city=None):
         if not self.phone_exist(phone):
             self.create_lead(
                 last_name=last_name,
@@ -75,7 +88,8 @@ class SalesForceClass():
                 company=company,
                 tags=tags,
                 is_international=is_international,
-                email=email
+                email=email,
+                city = city
             )
             print '{} new phone created'.format(phone)
 
@@ -91,6 +105,9 @@ class SalesForceClass():
         else:
             print '{}  phone not exist'.format(phone)
             return False
+
+
+
 
 # check_and_create_lead(
 #     last_name='(Fake do not process) Joe & Mathers Fava',

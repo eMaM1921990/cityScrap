@@ -154,9 +154,9 @@ def cloneSalesForceLeads(request):
     # sales_force_leads_list = SalesForce.objects.all()
     # sales_force_leads_list = ['+'+str(o.remove_number_format) for o in sales_force_leads_list]
     #
-    # data = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct()
-    data = None
-    file = True
+    data = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct()
+    # data = None
+    file = False
     if file:
         dataReader = csv.reader(open('/Users/mac/Downloads/VacationRentels.csv'), delimiter=str(u',').encode('utf-8'),
                                 quotechar=str(u'"').encode('utf-8'))
@@ -168,13 +168,14 @@ def cloneSalesForceLeads(request):
                     # phone_records = ScrapDetails.objects.filter(phone=phone)
                     SalesForceInstance.check_and_create_lead(last_name=record[0],
                                                              phone=record[1],
-                                                             campaign_source=(str(record[3]))[:25],
+                                                             campaign_source='',
                                                              lead_source='Ahmed_Allumala',
                                                              website=record[3],
                                                              company='--',
                                                              tags='--',
                                                              email=record[2],
-                                                             is_international=True)
+                                                             is_international=True,
+                                                             city='')
                 except Exception as e:
                     print str(e)
     else:
@@ -184,9 +185,9 @@ def cloneSalesForceLeads(request):
             time.sleep(10)
             SalesForceInstance.check_and_create_lead(last_name=record.name,
                                                      phone=record.phone,
-                                                     campaign_source=(record.scrap.name)[:25],
+                                                     campaign_source=((record.scrap.name).split(','))[2],
                                                      lead_source='AhmedFlipKey ',
-                                                     website='',
+                                                     website=record.url,
                                                      company='FlipKey',
                                                      tags='FlipKey, scrape, house',
                                                      email='',
