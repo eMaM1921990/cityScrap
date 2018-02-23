@@ -182,10 +182,11 @@ def cloneSalesForceLeads(request):
         for r in data:
             record = ScrapDetails.objects.filter(phone=r['phone'])
             record = record[0]
-            time.sleep(10)
+            time.sleep(5)
+            print record.scrap.name
             SalesForceInstance.check_and_create_lead(last_name=record.name,
                                                      phone=record.phone,
-                                                     campaign_source=((record.scrap.name).split(','))[2],
+                                                     campaign_source=((record.scrap.name).split(','))[0],
                                                      lead_source='AhmedFlipKey ',
                                                      website=record.url,
                                                      company='FlipKey',
