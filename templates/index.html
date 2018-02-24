@@ -121,6 +121,8 @@
         }
     </style>
 
+    <link rel="stylesheet" href="{% static 'select2.min.css' %}" type="text/css" media="all">
+
 
 </head>
 <body>
@@ -159,7 +161,7 @@
                 {#                </li>#}
                 {##}
                                 <li >
-                                    <a href="{% url 'cloneSalesForceLeads' %}">Clone Salesforce</a>
+                                    <a href="{% url 'cloneSalesForceLeads' %}">Sync with Salesforce</a>
                                 </li>
 
 
@@ -183,7 +185,7 @@
                 {% csrf_token %}
                 <div class="col-xs-3">
                     <div class="form-group">
-                        <select class="" id="city" name="city">
+                        <select class="" id="city_" name="city">
                             {% for city in cities %}
                                 <option value="{{ city.name }}">{{ city.name }}</option>
                             {% endfor %}
@@ -208,7 +210,7 @@
 
     <div class="col-md-6">
         {{ message }}
-        <h1>CriagList Cities</h1>
+        <h1>Craigslist Cities</h1>
         <div class="row">
             <form action="{% url 'scrap_criaglist' %}" method="post">
                 {% csrf_token %}
@@ -241,6 +243,7 @@
 
 <script src="{% static 'jquery-1.12.4.js' %}"></script>
 <script src="{% static 'scrap.js' %}"></script>
+<script src="{% static 'select2.min.js' %}"></script>
 <script>
     $(document).ready(function () {
         $(document).ajaxStart(function () {
@@ -250,6 +253,9 @@
             $("#wait").css("display", "none");
         });
 
+
+        $("#city_").select2();
+        $("#city").select2();
     });
 
 </script>

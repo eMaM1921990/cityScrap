@@ -125,15 +125,15 @@ def scrap(request):
 
         return HttpResponse(json.dumps(ret, ensure_ascii=False))
     else:
-        arr_cities = ['N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-        for city in arr_cities:
-            cities = City.objects.values('name').filter(name__startswith=city).exclude(country__code2='US').distinct()
-
-            job_numbers = 0
-            for city in cities:
-                startScraptask.delay(city)
-                job_numbers += 1
-                # calc.delay(10)
+        # arr_cities = ['N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+        # for city in arr_cities:
+        #     cities = City.objects.values('name').filter(name__startswith=city).exclude(country__code2='US').distinct()
+        #
+        #     job_numbers = 0
+        #     for city in cities:
+        startScraptask.delay(cityId)
+        # job_numbers += 1
+        # calc.delay(10)
 
     return redirect(reverse(index))
 
