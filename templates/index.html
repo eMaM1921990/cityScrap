@@ -140,7 +140,7 @@
 
 
             <!-- Main title -->
-            <a class="navbar-brand" href="..">Scapper</a>
+            <a class="navbar-brand" href="..">Scraper</a>
         </div>
 
         <!-- Expanded navigation -->
@@ -170,7 +170,7 @@
     </div>
 </div>
 <div class="jumbotron">
-    <h1>Scapper</h1>
+    <h1>Scraper</h1>
 
 </div>
 
@@ -189,13 +189,14 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="form-group">
-                        <select class="" id="website" name="website">
-                            <option value="TravelMob">FlipKey</option>
-                        </select>
-                    </div>
+{#                    <div class="form-group">#}
+{#                        <select class="" id="website" name="website">#}
+{#                            <option value="TravelMob">FlipKey</option>#}
+{#                        </select>#}
+{#                    </div>#}
+                <input type="hidden" value="TravelMob" name="website">
                     <div>
-                        <input type="submit" class="btn btn-info btn-large " value="Scrap">
+                        <input type="submit" class="btn btn-info btn-large " value="Scrape">
                     </div>
                 </div>
 
@@ -223,7 +224,7 @@
                     </div>
 
                     <div>
-                        <input type="submit" class="btn btn-info btn-large " value="Start Scrap">
+                        <input type="submit" class="btn btn-info btn-large " value="Scrape">
                     </div>
                 </div>
 

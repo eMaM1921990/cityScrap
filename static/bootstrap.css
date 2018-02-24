@@ -4551,7 +4551,7 @@ a.list-group-item.active > .badge,
   padding: 30px;
   margin-bottom: 30px;
   color: inherit;
-  background-color: #eee;
+  background-color: #fff;
 }
 .jumbotron h1,
 .jumbotron .h1 {
@@ -4575,9 +4575,10 @@ a.list-group-item.active > .badge,
   .jumbotron {
     padding-top: 48px;
     padding-bottom: 48px;
-    background-image: url("maxresdefault.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
+    /* background-image: url("maxresdefault.jpg"); */
+    /* background-repeat: no-repeat; */
+    at; */
+  background-size: cover;
     height: 400px;
   }
   .container .jumbotron {
