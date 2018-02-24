@@ -227,11 +227,11 @@ def CriagListScrap(request):
         return HttpResponse(json.dumps(resp, ensure_ascii=False))
     try:
         try:
-            object = ScrapModel.objects.get(name=data['city_name'], source='Craiglist')
+            object = ScrapModel.objects.get(name=data['city_name'], source='Craigslist')
         except ObjectDoesNotExist as e:
             object = ScrapModel()
             object.name = data['city_name']
-            object.source = 'Craiglist'
+            object.source = 'Craigslist'
             object.save()
 
         # create scrap details
