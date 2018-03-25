@@ -28,28 +28,24 @@ import json
 from django.views.decorators.http import require_http_methods
 
 from cityScrapperApp.FlipKey import FlipKeyScrapper
-from cityScrapperApp.models import ScrapModel, ScrapDetails
+from cityScrapperApp.models import ScrapModel, ScrapDetails, CriagslistCities
 from tasks import *
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
 
-def index(request,**kwargs):
+def index(request, **kwargs):
     context = {}
     template = 'index.html'
     # Get Cities
     context['cities'] = City.objects.values('name').distinct()
-    # Get Criaglist
-    response = requests.get(
-        'http://40.65.121.61/cldownloader/fetchcitynames.php?token=eb825fe5969d2cc210e2fe9772d251c8')
-    if response.status_code == 200:
-        context['criaglist_cities'] = json.loads(response.text)
+    context['criaglist_cities'] = CriagslistCities.objects.all().order_by('region')
     context['count'] = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct().count()
 
     if kwargs.get('msg'):
-        context['msg'] =kwargs.get('msg')
-    return render(request=request,template_name=template,context=context)
+        context['msg'] = kwargs.get('msg')
+    return render(request=request, template_name=template, context=context)
 
 
 def travelMobData(request):
@@ -143,39 +139,37 @@ def scrap_criaglist(request):
     cityId = request.POST.get('city')
     print cityId
     startScrapCriaglist.delay(cityId.split(',')[1], cityId.split(',')[2], cityId.split(',')[0])
-    return redirect(reverse(index),msg='Request send and ready for scrapping')
+    return redirect(reverse(index), msg='Request send and ready for scrapping')
 
 
 def cloneSalesForceLeads(request):
     SalesForceInstance = SalesForceClass()
-    # sales_force_leads_list  = SalesForceInstance.query_all_leads()
-    # SalesForce.objects.bulk_create(sales_force_leads_list)
-
-    # sales_force_leads_list = SalesForce.objects.all()
-    # sales_force_leads_list = ['+'+str(o.remove_number_format) for o in sales_force_leads_list]
     #
     data = ScrapDetails.objects.filter(phone__isnull=False).values('phone').distinct()
     # data = None
     file = False
     if file:
-        dataReader = csv.reader(open('/Users/mac/Downloads/VacationRentels.csv'), delimiter=str(u',').encode('utf-8'),
+        dataReader = csv.reader(open('/Users/mac/Downloads/listing_ahmed.csv'), delimiter=str(u',').encode('utf-8'),
                                 quotechar=str(u'"').encode('utf-8'))
         for record in dataReader:
             print '{} start phone '.format(record[1])
             # phone = str(record['phone']).replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
-            if record[1]:
+            if record[0]:
                 try:
                     # phone_records = ScrapDetails.objects.filter(phone=phone)
                     SalesForceInstance.check_and_create_lead(last_name=record[0],
                                                              phone=record[1],
-                                                             campaign_source='',
-                                                             lead_source='Ahmed_Allumala',
-                                                             website=record[3],
+                                                             campaign_source='VoyajoyBooking',
+                                                             lead_source='Ahmed_VoyajoyBooking',
+                                                             website=record[4
+                                                             ],
                                                              company='--',
                                                              tags='--',
-                                                             email=record[2],
-                                                             is_international=True,
-                                                             city='')
+                                                             is_international=False,
+                                                             city='--',
+                                                             notes=record[2])
+
+                    # SalesForceInstance.update(id=record[0],city=record[2],phone=record[38])
                 except Exception as e:
                     print str(e)
     else:
@@ -187,11 +181,11 @@ def cloneSalesForceLeads(request):
             SalesForceInstance.check_and_create_lead(last_name=record.name,
                                                      phone=record.phone,
                                                      campaign_source=((record.scrap.name).split(','))[0],
-                                                     lead_source='AhmedFlipKey ',
+                                                     lead_source='AhmedFlipKey' if record.scrap.source == 'FlipKey' else 'AhmedCraigslist',
                                                      website=record.url,
-                                                     company='FlipKey',
-                                                     tags='FlipKey, scrape, house',
-                                                     email='',
+                                                     company='Flipkey' if record.scrap.source == 'FlipKey' else 'Craigslist',
+                                                     tags='Flipkey, scrape, house' if record.scrap.source == 'FlipKey' else 'Craigslist, scrape, house',
+                                                     email=record.email if record.email else '',
                                                      is_international=True)
 
     return redirect(reverse('index'))
@@ -211,8 +205,6 @@ def CriagListScrap(request):
     if 'city_name' not in data or len(data['city_name']) == 0:
         resp['msg'] = 'City name is required.'
         return HttpResponse(json.dumps(resp, ensure_ascii=False))
-
-
 
     if 'email' not in data or len(data['email']) == 0:
         resp['msg'] = 'email is required.'

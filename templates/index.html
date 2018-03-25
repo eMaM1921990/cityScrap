@@ -179,7 +179,7 @@
 <div class="container">
     <div class="col-md-6">
         {{ message }}
-        <h1>FlipKey Cities</h1>
+        <h1>Flipkey Cities</h1>
         <div class="row">
             <form action="{% url 'scrap' %}" method="post">
                 {% csrf_token %}
@@ -217,11 +217,17 @@
                 <div class="col-xs-3">
                     <div class="form-group">
                         <select class="" id="city" name="city">
-                            {% for state in criaglist_cities %}
-                                {% for  city in state.cities %}
-                                    <option value="{{ city.url }},{{ state.state }},{{ city.name }}">{{ state.state|title }} ,{{ city.name|title }}</option>
-                                {% endfor %}
+                            {% for city in criaglist_cities %}
+
+                                    <option value="{{ city.url }},{{ city.region }},{{ city.city }}">{{ city.region|title }} ,{{ city.city|title }}</option>
                             {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <select class="" id="city" name="city">
+                           <option value="/d/vacation-rentals/search/vac"> Vacation Rentals </option>
+                            <option value="/d/sublets-temporary/search/sub"> sublets / temporary </option>
                         </select>
                     </div>
 

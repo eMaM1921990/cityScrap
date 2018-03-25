@@ -1,6 +1,7 @@
 import requests
 from celery import shared_task
 
+from cityScrapperApp.CraigslistScrapper import CraigslistScrapper
 from cityScrapperApp.FlipKey import FlipKeyScrapper
 
 __author__ = 'eMaM'
@@ -27,3 +28,12 @@ def startScrapCriaglist(state,city,url):
     response = requests.get(url)
     if response.status_code == 200:
         return response.text
+
+
+
+@shared_task(max_retries=10)
+def CriagslistScrap(base_url):
+    scrap = CraigslistScrapper(base_url=base_url)
+    print 'start processing with URL ' + base_url
+    # start scrap
+    scrap.scrap_cl()

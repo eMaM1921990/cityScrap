@@ -1,10 +1,11 @@
+from cities_light.models import City
 from django.conf import settings
 
 from simple_salesforce import Salesforce
 import re
 
 # from travelmobApp.models import SalesForce
-from cityScrapperApp.models import SalesForce
+# from cityScrapperApp.models import SalesForce, ScrapDetails
 
 __author__ = 'eMaM'
 
@@ -20,7 +21,8 @@ class SalesForceClass():
             # sandbox=True
         )
 
-    def get_lead_object(self, last_name, phone, campaign_source, lead_source, website, company, tags, is_international,email,city):
+    def get_lead_object(self, last_name, phone, campaign_source, lead_source, website, company, tags, is_international,
+                         city, notes):
         return {
             'Status': 'New',  # static
             'LastName': last_name,  # put whole name string into last name
@@ -32,26 +34,24 @@ class SalesForceClass():
             'Company': company,  # website name
             'Tag_Cloud__c': tags,  # random tags, i used source, method, property type.
             'International_Phone__c': is_international,
-            'Email':email,
-            'City':city
+            'City': city,
+            'Lead_Notes__c':notes
         }
 
-
-    def get_lead_object_update(self, id , city):
+    def get_lead_object_update(self, id, city):
         return {
             'Id': id,  # static
-            'City':city
+            'City': city
         }
 
-    def create_lead(self, last_name, phone, campaign_source, lead_source, website, company, tags, is_international,email,city):
+    def create_lead(self, last_name, phone, campaign_source, lead_source, website, company, tags, is_international,
+                     city, notes):
         lead_obj = self.get_lead_object(last_name, phone, campaign_source, lead_source, website, company, tags,
-                                        is_international,email,city)
+                                        is_international,  city,notes)
         self.sf.Lead.create(lead_obj)
 
-
-    def create_update_lead(self,id ,city):
+    def create_update_lead(self, id, city):
         self.sf.Lead.upsert
-
 
     # Pulls all phone numbers. Phone numbers are not all the same format, so numbers will need to be standardized or converted before comparison
     def query_all_leads(self):
@@ -76,8 +76,8 @@ class SalesForceClass():
         return leads
 
     # You can use this to create a single lead to salesforce
-    def     check_and_create_lead(self, last_name, phone, campaign_source, lead_source, website, company, tags,
-                              is_international,email,city=None):
+    def check_and_create_lead(self, last_name, phone, campaign_source, lead_source, website, company, tags,
+                              is_international,  city=None,notes=''):
         if not self.phone_exist(phone):
             self.create_lead(
                 last_name=last_name,
@@ -88,8 +88,9 @@ class SalesForceClass():
                 company=company,
                 tags=tags,
                 is_international=is_international,
-                email=email,
-                city = city
+                city=city,
+                notes = notes
+
             )
             print '{} new phone created'.format(phone)
 
@@ -106,8 +107,14 @@ class SalesForceClass():
             print '{}  phone not exist'.format(phone)
             return False
 
-
-
+    def update(self, id, city,phone):
+        # querySet = City.objects.filter(display_name__contains=city)
+        if phone.startswith('1'):
+            print 'is US city : {} , phone : {}'.format(city,phone)
+            self.sf.Lead.update(id, {'Campaign_Source__c': city,'LeadSource':'AhmedFlipkey'})
+        else:
+            print 'is not US city : {} , phone : {}'.format(city,phone)
+            self.sf.Lead.update(id, {'Campaign_Source__c': city,'LeadSource':'AhmedFlipkey_international'})
 
 # check_and_create_lead(
 #     last_name='(Fake do not process) Joe & Mathers Fava',

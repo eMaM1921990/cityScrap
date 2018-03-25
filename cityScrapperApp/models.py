@@ -44,6 +44,7 @@ class ScrapDetails(models.Model):
     l_name = models.CharField(max_length=150, null=True)
     phone = models.CharField(max_length=150, null=True)
     url = models.URLField()
+    email = models.EmailField(null=True)
 
     def __unicode__(self):
         return self.name
@@ -63,24 +64,34 @@ class ScrapDetails(models.Model):
         db_table = 'scrap_details'
 
 
-class SalesForce(models.Model):
-    sales_force_id = models.CharField(max_length=250)
-    sales_force_phone = models.CharField(max_length=250, db_index=True)
+# class SalesForce(models.Model):
+#     sales_force_id = models.CharField(max_length=250)
+#     sales_force_phone = models.CharField(max_length=250, db_index=True)
+#
+#     def __unicode__(self):
+#         return self.sales_force_phone
+#
+#     @property
+#     def format_phone_number(self):
+#         if self.sales_force_phone:
+#             x = phonenumbers.parse(self.sales_force_phone, None)
+#             return phonenumbers.format_number(x, phonenumbers.PhoneNumberFormat.E164)
+#         return '-'
+#
+#     @property
+#     def remove_number_format(self):
+#         return str(self.sales_force_phone).replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
+#
+#     class Meta:
+#         managed = MANAGED
+#         db_table = 'sales_force'
 
-    def __unicode__(self):
-        return self.sales_force_phone
 
-    @property
-    def format_phone_number(self):
-        if self.sales_force_phone:
-            x = phonenumbers.parse(self.sales_force_phone, None)
-            return phonenumbers.format_number(x, phonenumbers.PhoneNumberFormat.E164)
-        return '-'
-
-    @property
-    def remove_number_format(self):
-        return str(self.sales_force_phone).replace("(", "").replace(")", "").replace("-", "").replace(" ", "")
+class CriagslistCities(models.Model):
+    region = models.CharField(max_length=250)
+    city = models.CharField(max_length=250)
+    url = models.URLField()
 
     class Meta:
         managed = MANAGED
-        db_table = 'sales_force'
+        db_table = 'criagslist_cities'
