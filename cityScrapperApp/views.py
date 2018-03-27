@@ -134,7 +134,7 @@ def scrap_criaglist(request):
     cityId = request.POST.get('city')
     category = request.POST.get('category')
     print cityId
-    CriagslistScrap.delay(cityId.split(',')[1],category, cityId.split(',')[2], cityId.split(',')[0])
+    CriagslistScrap.delay(cityId.split(',')[0],category, cityId.split(',')[1], cityId.split(',')[2])
     return redirect(reverse(index), msg='Request send and ready for scrapping')
 
 

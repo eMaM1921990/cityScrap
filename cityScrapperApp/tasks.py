@@ -34,7 +34,7 @@ def startScrapCriaglist(state, city, url):
 def CriagslistScrap(base_url, category_url, city, region):
     scrap = CraigslistScrapper(base_url=base_url, category_url=category_url, city=city, region=region,
                                country='United States')
-    print 'start processing with URL ' + base_url
+    print 'start processing with URL ' + base_url + '|' + category_url
     # start scrap
     scrap.scrap_cl()
     return 'Complete scrap city {}'.format(city)

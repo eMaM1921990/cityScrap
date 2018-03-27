@@ -2,6 +2,7 @@ import StringIO
 import csv
 import datetime
 from bs4 import BeautifulSoup
+
 from django.conf import settings
 from django.core.mail import EmailMessage
 
@@ -23,7 +24,7 @@ class CraigslistScrapper():
             'X-Requested-With': 'XMLHttpRequest'
         }
         self.TIME_OUT = None
-        self.TIME_WAIT = 5
+        self.TIME_WAIT = 10
         self.KEY = '722255fb8fed3c74efd8a3f36063f6ea'
         self.BASE_URL = base_url
         self.CATEGORY_URL = category_url
@@ -70,6 +71,7 @@ class CraigslistScrapper():
                 href_tag = li_tag.find('a')
                 link = href_tag['href']
                 # start parse target data
+                print '__get_result_page_item {}'.format(link)
                 self.__parse_target_page(url=link)
 
     def __parse_target_page(self, url):
@@ -77,10 +79,13 @@ class CraigslistScrapper():
         if page_result_txt:
             soap_page = self.__parsePageSoap(page=page_result_txt)
             href_tag = soap_page.find('a', attrs={'id': 'replylink'})
-            self.__get_site_key(url=self.BASE_URL + href_tag['href'])
+            print 'here'
+            self.__get_site_key(url=self.BASE_URL + str(href_tag['href'])[1:])
 
     def __get_site_key(self, url):
+        print 'Get Site key from URL {} '.format(url)
         page_result_txt = self.__open_http_connection(call_url=url, page=None, is_get=False)
+        print page_result_txt
         if page_result_txt:
             soap_page = self.__parsePageSoap(page=page_result_txt)
             if soap_page:
@@ -94,22 +99,28 @@ class CraigslistScrapper():
                     self.__extract_contant_info(soap_page=resolver_captcha_page_soap, url=url)
 
     def __extract_contant_info(self, soap_page, url):
-        #
-        response_data = soap_page.find('div', attrs={'class': 'returnemail'})
-        li_tags = response_data.find_all('li')
-        if li_tags:
-            contact_name_tag = li_tags[0]
-            h1_tag = contact_name_tag.find('h1')
-            if h1_tag and h1_tag.text == 'contact name:':
-                contact_name = contact_name_tag.find('p')
-        mail_tag = soap_page.find('a', attrs={'class': 'mailapp'})
-        if mail_tag:
-            email = mail_tag.text
-        phone_tag = soap_page.find('p', attrs={'class': 'reply-tel-link'})
-        if phone_tag:
-            phone = str(phone_tag['href']).split(':')[1]
+        print 'result'
+        # print soap_page
 
-        self.__save_cl_result(contactname=contact_name,phone=phone,email=email,url=url)
+        email = soap_page.find('p', attrs={'class': 'anonemail'})
+        print 'email is {} '.format(email.text)
+
+        phone_tag_list = soap_page.find_all('a', attrs={'class': 'reply-tel-link'})
+        if phone_tag_list:
+            phone_tag = phone_tag_list[0]
+            phone = str(phone_tag['href'])[4:]
+            print 'phone is {} '.format(phone)
+
+        ul_tag = soap_page.find('ul')
+        contact_name_tag = ul_tag.find(text='contact name:')
+        if contact_name_tag:
+            name_tag = contact_name_tag.parent.findNext('p')
+            if name_tag:
+                name = name_tag.text
+                print 'contact name is {}'.format(name)
+
+
+        self.__save_cl_result(contactname=name,phone=phone,email=email,url=url)
 
     def __save_cl_result(self, contactname, email, phone, url):
         try:
@@ -131,6 +142,8 @@ class CraigslistScrapper():
 
     def __get_craiglisy_resolver(self, site_key, page):
         start_time = time()
+        print 'site key {}'.format(site_key)
+        print  'page {}'.format(page)
         # send credentials to the service to solve captcha
         # returns service's captcha_id of captcha to be solved
         url = "http://2captcha.com/in.php?key={SERVICE_KEY}&method=userrecaptcha&googlekey={googlekey}&pageurl={pageurl}".format(
@@ -157,12 +170,14 @@ class CraigslistScrapper():
         # POST parameters, might be more, depending on form content
         payload = {'submit': 'submit', 'g-recaptcha-response': resp.text[3:]}
         resp = requests.post(submit_url, headers=headers, data=payload)
+        print 'resp {} '.format(resp)
         if resp.status_code == 200:
             return resp.text
         return None
 
     def scrap_cl(self):
         url = self.BASE_URL + self.CATEGORY_URL
+        print 'working with url {}'.format(url)
         page_as_txt = self.__open_http_connection(call_url=url, page=0)
         if page_as_txt:
             soap_page = self.__parsePageSoap(page=page_as_txt)
@@ -178,13 +193,16 @@ class CraigslistScrapper():
                     # parse first page
                     self.__get_result_page_item(soap_page=soap_page)
 
-            # send email after parsing
-            csv_data =ScrapDetails.objects.filter(scrap__name='{},{},{}'.format(self.COUNTRY, self.REGION, self.CITY),created_dated=self.EXCUTE_DATE)
-            csvfile = StringIO.StringIO()
-            csvwriter = csv.writer(csvfile)
-            csvwriter.writerow(['Name', 'Phone', 'Email', 'Website', 'Location'])
-            for row in csv_data:
-                csvwriter.writerow([row.name, row.phone, row.email, row.url, row.scrap.name])
-            message = EmailMessage("Craigslist scrap","Your criagslist scrap file ",settings.SENDER,["emam151987@gmail.com"])
-            message.attach('{},{},{} - {}.csv'.format(self.COUNTRY, self.REGION, self.CITY,self.EXCUTE_DATE), csvfile.getvalue(), 'text/csv')
+                    # send email after parsing
+                    csv_data =ScrapDetails.objects.filter(scrap__name='{},{},{}'.format(self.COUNTRY, self.REGION, self.CITY),created_dated=self.EXCUTE_DATE)
+                    csvfile = StringIO.StringIO()
+                    csvwriter = csv.writer(csvfile)
+                    csvwriter.writerow(['Name', 'Phone', 'Email', 'Website', 'Location'])
+                    for row in csv_data:
+                        csvwriter.writerow([row.name, row.phone, row.email, row.url, row.scrap.name])
+                    message = EmailMessage("Craigslist scrap","Your criagslist scrap file ",settings.SENDER,["emam151987@gmail.com"])
+                    message.attach('{},{},{} - {}.csv'.format(self.COUNTRY, self.REGION, self.CITY,self.EXCUTE_DATE), csvfile.getvalue(), 'text/csv')
 
+#
+# CraigslistScrapper('https://shoals.craigslist.org/', 'd/vacation-rentals/search/vac', 'alabama', 'Florucen',
+#                    'US').scrap_cl()
