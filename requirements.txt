@@ -7,6 +7,6 @@ django-import-export
 djangorestframework
 simple-salesforce
 phonenumbers
-
+django-sendgrid-v5
 celery
 sqlalchemy

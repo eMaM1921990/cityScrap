@@ -1,4 +1,7 @@
+import datetime
 from bs4 import BeautifulSoup
+
+from cityScrapperApp.models import ScrapModel
 
 __author__ = 'eMaM'
 
@@ -7,7 +10,7 @@ import requests
 
 
 class CraigslistScrapper():
-    def __init__(self,base_url,target):
+    def __init__(self, base_url, CATEGORY_URL, city, region, country):
         self.KEY = '722255fb8fed3c74efd8a3f36063f6ea'
         self.ITEM_PER_PAGE = 120
         self.HEADERS = {
@@ -19,7 +22,11 @@ class CraigslistScrapper():
         self.TIME_WAIT = 5
         self.KEY = '722255fb8fed3c74efd8a3f36063f6ea'
         self.BASE_URL = base_url
-        self.TARGET = target
+        self.CATEGORY_URL = CATEGORY_URL
+        self.CITY = city
+        self.REGION = region
+        self.COUNTRY = country
+        self.EXCUTE_DATE = datetime.datetime.today().date()
 
     # Open Http connection
     def __open_http_connection(self, call_url, page, headers=None, is_get=True):
@@ -80,21 +87,43 @@ class CraigslistScrapper():
                 resolver_captcha_txt = self.__get_craiglisy_resolver(site_key=site_key, page=url)
                 if resolver_captcha_txt:
                     resolver_captcha_page_soap = self.__parsePageSoap(page=resolver_captcha_txt)
-                    self.__extract_contant_info(soap_page=resolver_captcha_page_soap)
+                    self.__extract_contant_info(soap_page=resolver_captcha_page_soap, url=url)
 
-    def __extract_contant_info(self, soap_page):
+    def __extract_contant_info(self, soap_page, url):
         #
-        returnemail_tag = soap_page.find('div', attrs={'class': 'returnemail'})
-        returnemail_ul_tag = returnemail_tag.find_all('li')
-        if returnemail_ul_tag:
-            contant_name_tag = returnemail_ul_tag[0]
-            h1_tag = contant_name_tag.find('h1')
+        response_data = soap_page.find('div', attrs={'class': 'returnemail'})
+        li_tags = response_data.find_all('li')
+        if li_tags:
+            contact_name_tag = li_tags[0]
+            h1_tag = contact_name_tag.find('h1')
             if h1_tag and h1_tag.text == 'contact name:':
-                contact_name = contant_name_tag.find('p')
+                contact_name = contact_name_tag.find('p')
         mail_tag = soap_page.find('a', attrs={'class': 'mailapp'})
-        email = mail_tag.text
+        if mail_tag:
+            email = mail_tag.text
         phone_tag = soap_page.find('p', attrs={'class': 'reply-tel-link'})
-        phone =  str(phone_tag['href']).split(':')[1]
+        if phone_tag:
+            phone = str(phone_tag['href']).split(':')[1]
+
+        self.__save_cl_result(contactname=contact_name,phone=phone,email=email,url=url)
+
+    def __save_cl_result(self, contactname, email, phone, url):
+        try:
+            scrap_info = ScrapModel.objects.get(source='Craigslist',
+                                                name='{},{},{}'.format(self.COUNTRY, self.REGION, self.CITY))
+        except Exception as e:
+            scrap_info = ScrapModel()
+            scrap_info.name = '{},{},{}'.format(self.COUNTRY, self.REGION, self.CITY)
+            scrap_info.source = 'Craigslist'
+            scrap_info.save()
+
+        scrap_info.scrap_model.create(
+            name=contactname if contactname else '',
+            phone=phone if phone else '',
+            url=url,
+            email=email if email else '',
+            created_dated=self.EXCUTE_DATE
+        )
 
     def __get_craiglisy_resolver(self, site_key, page):
         start_time = time()
@@ -129,8 +158,7 @@ class CraigslistScrapper():
         return None
 
     def scrap_cl(self):
-        url = self.BASE_URL+'/d/vacation-rentals/search/vac'
-        url = self.BASE_URL + self.TARGET
+        url = self.BASE_URL + self.CATEGORY_URL
         page_as_txt = self.__open_http_connection(call_url=url, page=0)
         if page_as_txt:
             soap_page = self.__parsePageSoap(page=page_as_txt)
@@ -139,13 +167,11 @@ class CraigslistScrapper():
             # parse first page
             self.__get_result_page_item(soap_page=soap_page)
 
-            for page in range(1,total_pages):
-                page_as_txt = self.__open_http_connection(call_url=url, page=page*self.ITEM_PER_PAGE)
+            for page in range(1, total_pages):
+                page_as_txt = self.__open_http_connection(call_url=url, page=page * self.ITEM_PER_PAGE)
                 if page_as_txt:
                     soap_page = self.__parsePageSoap(page=page_as_txt)
                     # parse first page
                     self.__get_result_page_item(soap_page=soap_page)
 
-
-
-# CraigslistScrapper().scrap_cl('https://sfbay.craigslist.org/search/sfc/vac')
+                    # send email after parsing

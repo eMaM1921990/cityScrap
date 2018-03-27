@@ -32,7 +32,7 @@ def startScrapCriaglist(state,city,url):
 
 
 @shared_task(max_retries=10)
-def CriagslistScrap(base_url):
+def CriagslistScrap(base_url,taget,city,region,country):
     scrap = CraigslistScrapper(base_url=base_url)
     print 'start processing with URL ' + base_url
     # start scrap

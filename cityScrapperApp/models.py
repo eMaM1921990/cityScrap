@@ -45,6 +45,7 @@ class ScrapDetails(models.Model):
     phone = models.CharField(max_length=150, null=True)
     url = models.URLField()
     email = models.EmailField(null=True)
+    created_dated = models.DateField(null=True)
 
     def __unicode__(self):
         return self.name
