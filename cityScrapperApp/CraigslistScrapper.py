@@ -1,7 +1,11 @@
+import StringIO
+import csv
 import datetime
 from bs4 import BeautifulSoup
+from django.conf import settings
+from django.core.mail import EmailMessage
 
-from cityScrapperApp.models import ScrapModel
+from cityScrapperApp.models import ScrapModel, ScrapDetails
 
 __author__ = 'eMaM'
 
@@ -10,7 +14,7 @@ import requests
 
 
 class CraigslistScrapper():
-    def __init__(self, base_url, CATEGORY_URL, city, region, country):
+    def __init__(self, base_url, category_url, city, region, country):
         self.KEY = '722255fb8fed3c74efd8a3f36063f6ea'
         self.ITEM_PER_PAGE = 120
         self.HEADERS = {
@@ -22,7 +26,7 @@ class CraigslistScrapper():
         self.TIME_WAIT = 5
         self.KEY = '722255fb8fed3c74efd8a3f36063f6ea'
         self.BASE_URL = base_url
-        self.CATEGORY_URL = CATEGORY_URL
+        self.CATEGORY_URL = category_url
         self.CITY = city
         self.REGION = region
         self.COUNTRY = country
@@ -174,4 +178,13 @@ class CraigslistScrapper():
                     # parse first page
                     self.__get_result_page_item(soap_page=soap_page)
 
-                    # send email after parsing
+            # send email after parsing
+            csv_data =ScrapDetails.objects.filter(scrap__name='{},{},{}'.format(self.COUNTRY, self.REGION, self.CITY),created_dated=self.EXCUTE_DATE)
+            csvfile = StringIO.StringIO()
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerow(['Name', 'Phone', 'Email', 'Website', 'Location'])
+            for row in csv_data:
+                csvwriter.writerow([row.name, row.phone, row.email, row.url, row.scrap.name])
+            message = EmailMessage("Craigslist scrap","Your criagslist scrap file ",settings.SENDER,["emam151987@gmail.com"])
+            message.attach('{},{},{} - {}.csv'.format(self.COUNTRY, self.REGION, self.CITY,self.EXCUTE_DATE), csvfile.getvalue(), 'text/csv')
+

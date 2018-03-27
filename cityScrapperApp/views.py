@@ -124,15 +124,7 @@ def scrap(request):
 
         return HttpResponse(json.dumps(ret, ensure_ascii=False))
     else:
-        # arr_cities = ['N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-        # for city in arr_cities:
-        #     cities = City.objects.values('name').filter(name__startswith=city).exclude(country__code2='US').distinct()
-        #
-        #     job_numbers = 0
-        #     for city in cities:
         startScraptask.delay(cityId)
-        # job_numbers += 1
-        # calc.delay(10)
 
     return redirect(reverse(index))
 
@@ -140,8 +132,9 @@ def scrap(request):
 @require_http_methods(["POST"])
 def scrap_criaglist(request):
     cityId = request.POST.get('city')
+    category = request.POST.get('category')
     print cityId
-    startScrapCriaglist.delay(cityId.split(',')[1], cityId.split(',')[2], cityId.split(',')[0])
+    startScrapCriaglist.delay(cityId.split(',')[1],category, cityId.split(',')[2], cityId.split(',')[0])
     return redirect(reverse(index), msg='Request send and ready for scrapping')
 
 
