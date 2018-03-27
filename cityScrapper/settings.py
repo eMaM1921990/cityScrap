@@ -78,23 +78,23 @@ WSGI_APPLICATION = 'cityScrapper.wsgi.application'
 
 DATABASES = {
     #
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'city_scrapper',
-    #     'USER': 'postgres',
-    #     'PASSWORD': 'J&d5FHYe6wp6',
-    #     'HOST':  '52.151.31.161',
-    #     'PORT': '5432',  # '5556'
-    # }
-
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'city_scrapper',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST':  'localhost',
+        'PASSWORD': 'J&d5FHYe6wp6',
+        'HOST':  '52.151.31.161',
         'PORT': '5432',  # '5556'
     }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'city_scrapper',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'postgres',
+    #     'HOST':  'localhost',
+    #     'PORT': '5432',  # '5556'
+    # }
 
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
